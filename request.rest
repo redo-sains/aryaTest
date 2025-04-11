@@ -1,0 +1,5 @@
+get http://localhost:5000/pengguna
+
+###
+
+get http://localhost:5000/barang
