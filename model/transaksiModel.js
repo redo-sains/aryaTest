@@ -52,7 +52,7 @@ const Transaksi = db.define('tb_transaksi', {
         type: DataTypes.STRING,
     },
     gambar: {
-        type: DataTypes.STRING
+        type: DataTypes.BLOB('long')
     },
     created_at: {
         type: DataTypes.DATE,

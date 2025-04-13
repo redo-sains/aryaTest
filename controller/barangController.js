@@ -1,23 +1,8 @@
 import Barang from "../model/barangModel.js";
 import multer from "multer";
-import path from "path";
-import fs from "fs";
-import { Op } from "sequelize";
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, "gambar/barang");
-    },
-    filename: (req, file, cb) => {
-        const originalName = file.originalname;
-        const fileName = originalName.replace(/\s+/g, '_'); 
-        const extname = path.extname(originalName); 
-        cb(null, fileName + extname);
-    },
-});
-
-const upload = multer({ storage: storage });
-export const uploadImage = upload.single("gambar");
+const storage = multer.memoryStorage();
+export const uploadImage = multer({ storage }).single("gambar");
 
 export const getBarang = async (req, res) => {
     try {
@@ -33,32 +18,38 @@ export const getBarang = async (req, res) => {
 
 export const getBarangById = async (req, res) => {
     try {
-        const response = await Barang.findOne({
+        const barang = await Barang.findOne({
             where: { id_barang: req.params.id }
         });
 
-        if (!response) {
+        if (!barang) {
             return res.status(404).json({ msg: "Barang tidak ditemukan" });
         }
 
-        res.status(200).json(response);
+        const responseData = {
+            ...barang.dataValues,
+            gambar: barang.gambar
+                ? `data:image/jpeg;base64,${barang.gambar.toString("base64")}`
+                : null,
+        };
+
+        res.status(200).json(responseData);
     } catch (error) {
         console.log(error.message);
         res.status(500).json({ message: error.message });
     }
 };
 
-
 export const createBarang = async (req, res) => {
     try {
-        let gambarPath = "";
+        let gambarBuffer = null;
         if (req.file) {
-            gambarPath = req.file.filename;
+            gambarBuffer = req.file.buffer;
         }
 
         await Barang.create({
             ...req.body,
-            gambar: gambarPath
+            gambar: gambarBuffer
         });
 
         res.status(201).json({ msg: "Barang Dibuat" });
@@ -75,17 +66,14 @@ export const updateBarang = async (req, res) => {
             return res.status(404).json({ msg: "Barang tidak ditemukan" });
         }
 
-        let gambarPath = barang.gambar;
+        let gambarBaru = barang.gambar;
 
         if (req.file) {
-            if (barang.gambar) {
-                fs.unlinkSync(`gambar/barang/${barang.gambar}`);
-            }
-            gambarPath = req.file.filename;
+            gambarBaru = req.file.buffer; 
         }
 
         await Barang.update(
-            { ...req.body, gambar: gambarPath },
+            { ...req.body, gambar: gambarBaru },
             { where: { id_barang: req.params.id } }
         );
 
@@ -101,10 +89,6 @@ export const deleteBarang = async (req, res) => {
         const barang = await Barang.findByPk(req.params.id);
         if (!barang) {
             return res.status(404).json({ msg: "Barang tidak ditemukan" });
-        }
-
-        if (barang.gambar) {
-            fs.unlinkSync(`gambar/barang/${barang.gambar}`);
         }
 
         await Barang.destroy({

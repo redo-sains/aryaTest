@@ -13,7 +13,7 @@ const route = express.Router()
 route.get('/peminjaman', getPinjaman)
 route.get('/pengembalian', getPengembalian)
 route.post('/peminjaman', uploadImage, createPinjaman)
-route.patch('/pengembalian/:id', uploadImage, createPengembalian)
-route.delete('/transaksi/:id', uploadImage, deleteTransaksi)
+route.patch('/pengembalian/:id', createPengembalian)
+route.delete('/transaksi/:id', deleteTransaksi)
 
 export default route

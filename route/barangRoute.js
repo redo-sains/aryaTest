@@ -14,6 +14,6 @@ route.get('/barang', getBarang)
 route.get('/barang/:id', getBarangById)
 route.post('/barang', uploadImage, createBarang)
 route.patch('/barang/:id', uploadImage, updateBarang)
-route.delete('/barang/:id', uploadImage, deleteBarang)
+route.delete('/barang/:id', deleteBarang)
 
 export default route

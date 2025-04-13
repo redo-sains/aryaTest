@@ -31,7 +31,7 @@ const Barang = db.define('tb_barang',{
         type: DataTypes.STRING,
     },
     gambar: {
-        type: DataTypes.STRING,
+        type: DataTypes.BLOB('long'),
     },
     keterangan: {
         type: DataTypes.TEXT,

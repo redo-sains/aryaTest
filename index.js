@@ -12,7 +12,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
-app.use('/gambar', express.static(path.resolve('gambar'))); 
+app.use(express.urlencoded({ extended: true }));
 
 app.use(penggunaRoute);
 app.use(barangRoute);
@@ -20,5 +20,3 @@ app.use(barangMasukRoute);
 app.use(transaksiRoute);
 
 app.listen(PORT, () => console.log(`Running on port ${PORT}`));
-
-// export const handler = serverless(app); 
